@@ -8,11 +8,11 @@ public:
     Matrix(int r, int c);
     ~Matrix();
     Matrix transpose();
-    void setData(const std::vector<std::vector<double>> &newData);
-    void setElement(int row, int col, double val);
-    double getElement(int row, int col) const;
-    int getRows() const;
-    int getCols() const;
+    void set_data(const std::vector<std::vector<double>> &newData);
+    void set_element(int row, int col, double val);
+    double get_element(int row, int col) const;
+    int get_rows() const;
+    int get_cols() const;
 
 private:
     int rows, cols;

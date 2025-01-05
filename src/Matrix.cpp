@@ -19,14 +19,14 @@ Matrix Matrix::transpose()
     {
         for (int j = 0; j < cols; j++)
         {
-            transposed.setElement(j, i, getElement(i, j));
+            transposed.set_element(j, i, get_element(i, j));
         }
     }
 
     return transposed;
 }
 
-void Matrix::setData(const std::vector<std::vector<double>> &newData)
+void Matrix::set_data(const std::vector<std::vector<double>> &newData)
 {
     if (newData.size() != rows)
     {
@@ -42,27 +42,27 @@ void Matrix::setData(const std::vector<std::vector<double>> &newData)
 
         for (int j = 0; j < cols; j++)
         {
-            setElement(i, j, newData[i][j]);
+            set_element(i, j, newData[i][j]);
         }
     }
 }
 
-void Matrix::setElement(int col, int row, double val)
+void Matrix::set_element(int col, int row, double val)
 {
     data[row * cols + col] = val;
 }
 
-double Matrix::getElement(int col, int row) const
+double Matrix::get_element(int col, int row) const
 {
     return data[row * cols + col];
 }
 
-int Matrix::getRows() const
+int Matrix::get_rows() const
 {
     return rows;
 }
 
-int Matrix::getCols() const
+int Matrix::get_cols() const
 {
     return cols;
 }
