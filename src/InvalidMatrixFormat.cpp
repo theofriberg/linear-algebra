@@ -1,17 +1,13 @@
-#include <exception>
+#include "../include/InvalidMatrixFormat.hpp"
+
 #include <string>
 
-class InvalidMatrixFormat : public std::exception
+InvalidMatrixFormat::InvalidMatrixFormat(const std::string &message)
+    : msg(message) {}
+
+InvalidMatrixFormat::~InvalidMatrixFormat() noexcept = default;
+
+const char *InvalidMatrixFormat::what() const noexcept
 {
-public:
-    explicit InvalidMatrixFormat(const std::string &message)
-        : msg(message) {}
-
-    const char *what() const noexcept override
-    {
-        return msg.c_str();
-    }
-
-private:
-    std::string msg;
-};
+    return msg.c_str();
+}
