@@ -42,3 +42,6 @@ Thumbs.db       # Windows specific
 # Ignore the compiled binaries
 *.exe
 *.out
+
+# Ignore vcpkg
+vcpkg
