@@ -21,11 +21,13 @@ public:
     ~ThreadPool();
 
     /**
-     * Enqueues a task to be executed by a worker thread.
+     * Enqueues a task to be executed by a worker thread in the pool.
      * @param task The task to be executed.
+     * @param args The arguments to be passed to the task.
+     * @return A future object representing the result of the task.
      */
-    template <typename F>
-    void enqueue(F &&task);
+    template <typename F, typename... Args>
+    auto enqueue(F &&task, Args &&...args) -> std::future<decltype(task(args...))>;
 
 private:
     std::vector<std::thread> workers;
