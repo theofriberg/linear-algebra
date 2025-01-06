@@ -37,7 +37,9 @@ ThreadPool::ThreadPool(size_t pool_size)
                 auto task = std::move(tasks.front());
                 tasks.pop();
                 lock.unlock();
-                task();
+
+                if (task)
+                    task();
             } });
     }
 }
@@ -56,34 +58,4 @@ ThreadPool::~ThreadPool()
     condition.notify_all();
     for (auto &worker : workers)
         worker.join();
-}
-
-/**
- * @brief Enqueues a task to be executed by a worker thread.
- *
- * @param task The task to be executed.
- * @return std::future<decltype(task(args...))> A future object that can be used to retrieve the result of the task.
- *
- * The enqueue method adds a task to the task queue and returns a future object that can be used to retrieve the result of the task.
- * The task is wrapped in a packaged_task object, which is stored in a shared pointer to ensure that the task is not destroyed
- * before it is executed. The task is added to the queue using a lambda function that calls the packaged_task object. The return
- * type of the task is deduced using decltype and passed to the std::future object, which is returned to the caller.
- */
-template <typename F, typename... Args>
-auto ThreadPool::enqueue(F &&task, Args &&...args) -> std::future<decltype(task(args...))>
-{
-    using return_type = decltype(task(args...));
-
-    auto wrapper = std::make_shared<std::packaged_task<return_type()>>(
-        std::bind(std::forward<F>(task), std::forward<Args>(args)...));
-
-    std::future<return_type> future = wrapper->get_future();
-
-    {
-        std::unique_lock<std::mutex> lock(queue_mutex);
-        tasks.emplace([wrapper]()
-                      { (*wrapper)(); });
-    }
-
-    return future;
 }
