@@ -2,6 +2,7 @@
 #include "../include/InvalidMatrixFormat.hpp"
 #include "../include/MatrixView.hpp"
 #include "../include/TransposedMatrixView.hpp"
+#include "../include/PaddedMatrixView.hpp"
 
 #include <iostream>
 
@@ -70,10 +71,10 @@ TransposedMatrixView Matrix::transpose_view() const
  * Note that MatrixView.get_element() will return 0.0 if the row or column index is out of bounds
  * so we only need to find the correct number of rows and columns and return a MatrixView of that shape.
  */
-MatrixView Matrix::create_square_view() const
+PaddedMatrixView Matrix::create_square_view() const
 {
     int shape = find_square_shape(rows, cols);
-    return MatrixView(data, shape, shape, 0, 0);
+    return PaddedMatrixView(data, shape, shape, rows, cols);
 }
 
 // This function should not be used in production code. Only for testing/debugging purposes.
@@ -176,6 +177,18 @@ double Matrix::get_element(int row, int col) const
     }
 
     return data[row * cols + col];
+}
+
+void Matrix::display() const
+{
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            std::cout << get_element(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 int Matrix::get_rows() const

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <optional>
 
 // Forward declaration of Matrix.
 class Matrix;
@@ -50,6 +51,19 @@ public:
     virtual double get_element(int row, int col) const;
 
     /**
+     * @brief Overloads get_element to take in an additional parameter to modify the step size.
+     *
+     * This function retrieves the element at the given row and column in the view with the step size given by the parameter.
+     * For example this is used in PaddedMatrixView for correct data access when using padded views.
+     *
+     * @param row The row index of the element to retrieve.
+     * @param col The column index of the element to retrieve.
+     *
+     * @return The value of the element at the specified row and column in the view.
+     */
+    double get_element(int row, int col, int stride) const;
+
+    /**
      * @brief Splits the matrix view into four equal-sized sub-matrices.
      *
      * This function divides the current matrix view into four equal-sized sub-matrices.
@@ -71,6 +85,8 @@ public:
     MatrixView operator+(const MatrixView &other) const;
 
     MatrixView operator-(const MatrixView &other) const;
+
+    void display() const;
     int get_rows() const;
     int get_cols() const;
 
@@ -80,4 +96,5 @@ private:
     int row_offset, col_offset;
 
     friend class TransposedMatrixView;
+    friend class PaddedMatrixView;
 };

@@ -3,6 +3,7 @@
 #include "../include/Matrix.hpp"
 
 #include <array>
+#include <optional>
 #include <iostream>
 
 MatrixView::MatrixView(
@@ -23,9 +24,22 @@ double MatrixView::get_element(int row, int col) const
         throw std::out_of_range("Row or column index out of range.");
     }
 
-    double value = parent_data[(row + row_offset) * cols + col + col_offset];
-    std::cout << "Value: " << value << std::endl;
-    return value ? value : 0;
+    return parent_data[(row + row_offset) * cols + col + col_offset];
+}
+
+/**
+ * Overloads get_element to take in an additional parameter to modify the stride.
+ * Note that the returned value will be different:
+ * return parent_data[(row + row_offset) * stride + col + col_offset];
+ */
+double MatrixView::get_element(int row, int col, int stride) const
+{
+    if (row < 0 || row >= rows || col < 0 || col >= cols)
+    {
+        throw std::out_of_range("Row or column index out of range.");
+    }
+
+    return parent_data[(row + row_offset) * stride + col + col_offset];
 }
 
 std::array<MatrixView, 4> MatrixView::split() const
@@ -109,6 +123,18 @@ MatrixView MatrixView::operator-(const MatrixView &other) const
     }
 
     return MatrixView(result_data, rows, cols, 0, 0);
+}
+
+void MatrixView::display() const
+{
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            std::cout << get_element(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 int MatrixView::get_rows() const
 {

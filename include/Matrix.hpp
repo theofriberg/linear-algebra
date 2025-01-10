@@ -2,6 +2,7 @@
 
 #include "../include/MatrixView.hpp"
 #include "../include/TransposedMatrixView.hpp"
+#include "../include/PaddedMatrixView.hpp"
 
 #include <vector>
 
@@ -76,7 +77,7 @@ public:
      *
      * @note This function should not be used in production code. It is only intended for testing and debugging purposes.
      */
-    MatrixView create_square_view() const;
+    PaddedMatrixView create_square_view() const;
 
     /**
      * @brief This method is for testing purposes only and should not be used in production.
@@ -167,6 +168,8 @@ public:
      * @throws std::out_of_range If the specified column or row index is out of bounds.
      */
     double get_element(int row, int col) const;
+
+    void display() const;
     int get_rows() const;
     int get_cols() const;
 

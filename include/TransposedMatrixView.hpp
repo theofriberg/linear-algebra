@@ -7,8 +7,7 @@
 class TransposedMatrixView : public MatrixView
 {
 public:
-    TransposedMatrixView(std::shared_ptr<const double[]> data, int r, int c, int row_off, int col_off)
-        : MatrixView(data, r, c, row_off, col_off) {}
+    TransposedMatrixView(std::shared_ptr<const double[]> data, int r, int c, int row_off, int col_off);
 
     /**
      * @brief Returns the element at the specified row and column in the transposed matrix view.
