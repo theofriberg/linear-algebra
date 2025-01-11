@@ -7,16 +7,18 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-# Define the test executable
-add_executable(run_tests test_matrix.cpp test_matrixOperator.cpp test_thread-pool.cpp)
+# Function to add a test executable for a single test file
+function(add_gtest_executable test_name test_file)
+  add_executable(${test_name} ${test_file}) # Create an executable for the test file
+  target_link_libraries(${test_name} PRIVATE neural_network_lib gtest gtest_main pthread) # Link dependencies
+  add_test(NAME ${test_name} COMMAND ${test_name} --gtest_color=yes --gtest_fail_fast) # Register it as a separate CTest entry
+endfunction()
 
-# Link the library and GoogleTest to the test executable
-target_link_libraries(run_tests PRIVATE neural_network_lib gtest gtest_main pthread)
-
-# Enable testing with CTest
-add_test(NAME MatrixTest COMMAND run_tests)
-add_test(NAME MatrixOperatorTest COMMAND run_tests)
-add_test(NAME ThreadPoolTest COMMAND run_tests)
-
+# Enable testing
 enable_testing()
+
+# Add separate executables and tests for each test file
+add_gtest_executable(MatrixTest test_matrix.cpp)
+add_gtest_executable(MatrixOperatorTest test_matrixOperator.cpp)
+add_gtest_executable(ThreadPoolTest test_thread-pool.cpp)
 
