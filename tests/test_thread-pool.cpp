@@ -177,3 +177,9 @@ TEST(ThreadPoolTest, TestInvalidFunctionThrows)
                             { return a + b; }, std::move(a), std::move(b)),
         std::invalid_argument);
 }
+
+int main(int argc, char **argv)
+{
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
