@@ -10,7 +10,7 @@ FetchContent_MakeAvailable(googletest)
 # Function to add a test executable for a single test file
 function(add_gtest_executable test_name test_file)
   add_executable(${test_name} ${test_file}) # Create an executable for the test file
-  target_link_libraries(${test_name} PRIVATE neural_network_lib gtest gtest_main pthread) # Link dependencies
+  target_link_libraries(${test_name} PRIVATE linear_algebra_lib gtest gtest_main pthread) # Link dependencies
   add_test(NAME ${test_name} COMMAND ${test_name} --gtest_color=yes --gtest_fail_fast) # Register it as a separate CTest entry
 endfunction()
 
