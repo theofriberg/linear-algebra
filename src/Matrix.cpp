@@ -1,32 +1,84 @@
 #include "../include/Matrix.hpp"
 #include "../include/InvalidMatrixFormat.hpp"
+#include "../include/MatrixView.hpp"
+#include "../include/TransposedMatrixView.hpp"
+#include "../include/PaddedMatrixView.hpp"
 
-Matrix::Matrix(int r, int c) : rows(r), cols(c)
+#include <iostream>
+
+/**
+ * Finds the smallest integer k >= n such that k == 2^x for some integer x.
+ */
+int find_smallest_integer_power_of_two(int n)
 {
-    data = new double[r * c]();
-}
-
-Matrix::~Matrix()
-{
-    delete[] data;
-}
-
-Matrix Matrix::transpose()
-{
-    Matrix transposed(cols, rows); // Cols and rows are flipped
-
-    for (int i = 0; i < rows; i++)
+    if (n < 1)
     {
-        for (int j = 0; j < cols; j++)
+        throw std::invalid_argument("Input must be a positive integer.");
+    }
+
+    n--;
+    n |= n >> 1;
+    n |= n >> 2;
+    n |= n >> 4;
+    n |= n >> 8;
+    n |= n >> 16;
+    return n + 1;
+}
+
+/**
+ * If rows is less then cols we need to add at least as many rows such that
+ * the number of rows == number of columns. We then call find_smallest_integer_power_of_two()
+ * on the number of columns to find the smallest integer n such that n == 2^x for some integer x.
+ */
+int find_square_shape(int rows, int cols)
+{
+    return rows < cols
+               ? find_smallest_integer_power_of_two(cols)
+               : find_smallest_integer_power_of_two(rows);
+}
+
+Matrix::Matrix(int r, int c) : rows(r),
+                               cols(c),
+                               data(std::shared_ptr<double[]>(new double[r * c](), std::default_delete<double[]>())) {}
+
+Matrix Matrix::transpose() const
+{
+    int transposed_rows = cols;
+    int transposed_cols = rows;
+
+    Matrix transposed(transposed_rows, transposed_cols); // Cols and rows are flipped
+
+    for (int i = 0; i < transposed_rows; i++)
+    {
+        for (int j = 0; j < transposed_cols; j++)
         {
-            transposed.setElement(j, i, getElement(i, j));
+            transposed(i, j) = get_element(j, i);
         }
     }
 
     return transposed;
 }
 
-void Matrix::setData(const std::vector<std::vector<double>> &newData)
+TransposedMatrixView Matrix::transpose_view() const
+{
+    int transposed_rows = cols;
+    int transposed_cols = rows;
+
+    return TransposedMatrixView(data, transposed_rows, transposed_cols, 0, 0);
+}
+
+/**
+ * Note that MatrixView.get_element() will return 0.0 if the row or column index is out of bounds
+ * so we only need to find the correct number of rows and columns and return a MatrixView of that shape.
+ */
+PaddedMatrixView Matrix::create_square_view() const
+{
+    int shape = find_square_shape(rows, cols);
+    return PaddedMatrixView(data, shape, shape, rows, cols);
+}
+
+// This function should not be used in production code. Only for testing/debugging purposes.
+void Matrix::set_data(const std::vector<std::vector<double>> &newData)
 {
     if (newData.size() != rows)
     {
@@ -42,27 +94,114 @@ void Matrix::setData(const std::vector<std::vector<double>> &newData)
 
         for (int j = 0; j < cols; j++)
         {
-            setElement(i, j, newData[i][j]);
+            set_element(i, j, newData[i][j]);
         }
     }
 }
 
-void Matrix::setElement(int col, int row, double val)
+double &Matrix::operator()(int row, int col)
 {
-    data[row * cols + col] = val;
-}
+    if (!is_valid_index(row, col))
+    {
+        throw std::out_of_range("Matrix index out of bounds.");
+    }
 
-double Matrix::getElement(int col, int row) const
-{
     return data[row * cols + col];
 }
 
-int Matrix::getRows() const
+const double &Matrix::operator()(int row, int col) const
+{
+    if (!is_valid_index(row, col))
+    {
+        throw std::out_of_range("Matrix index out of bounds.");
+    }
+
+    return data[row * cols + col];
+}
+
+Matrix Matrix::operator+(const Matrix &other) const
+{
+    if (rows != other.get_rows() || cols != other.get_cols())
+    {
+        throw InvalidMatrixFormat("Invalid format for matrix addition. Number of rows and number of columns must match.");
+    }
+
+    Matrix result(rows, cols);
+
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            result(i, j) = get_element(i, j) + other(i, j);
+        }
+    }
+
+    return result;
+}
+
+Matrix Matrix::operator-(const Matrix &other) const
+{
+    if (rows != other.get_rows() || cols != other.get_cols())
+    {
+        throw InvalidMatrixFormat("Invalid format for matrix addition. Number of rows and number of columns must match.");
+    }
+
+    Matrix result(rows, cols);
+
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            result(i, j) = get_element(i, j) - other(i, j);
+        }
+    }
+
+    return result;
+}
+
+void Matrix::set_element(int row, int col, double val)
+{
+    if (!is_valid_index(row, col))
+    {
+        throw std::out_of_range("Matrix index out of bounds.");
+    }
+
+    data[row * cols + col] = val;
+}
+
+double Matrix::get_element(int row, int col) const
+{
+    if (!is_valid_index(row, col))
+    {
+        throw std::out_of_range("Matrix index out of bounds.");
+    }
+
+    return data[row * cols + col];
+}
+
+void Matrix::display() const
+{
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            std::cout << get_element(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+int Matrix::get_rows() const
 {
     return rows;
 }
 
-int Matrix::getCols() const
+int Matrix::get_cols() const
 {
     return cols;
+}
+
+bool Matrix::is_valid_index(int row, int col) const
+{
+    return row >= 0 && row < rows && col >= 0 && col < cols;
 }

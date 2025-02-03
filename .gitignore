@@ -45,3 +45,7 @@ Thumbs.db       # Windows specific
 
 # Ignore vcpkg
 vcpkg
+
+# Ignore some personal files
+TODO.txt
+.cache/
