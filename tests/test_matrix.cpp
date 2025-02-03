@@ -258,6 +258,11 @@ TEST(MatrixTest, TestSubtractionOperatorNegativeNumbers)
     }
 }
 
+TEST(MatrixViewTest, TestConvertToMatrix)
+{
+    // TODO: Test convert_to_matrix() method
+}
+
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

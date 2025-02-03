@@ -63,6 +63,10 @@ std::array<MatrixView, 4> MatrixView::split() const
  */
 Matrix MatrixView::convert_to_matrix(int row_start, int row_end, int col_start, int col_end) const
 {
+    std::cout << "Row start: " << row_start << " Row end: " << row_end << std::endl;
+    std::cout << "Col start: " << col_start << " Col end: " << col_end << std::endl;
+    std::cout << "Rows: " << rows << std::endl;
+
     if (row_start < 0 || row_end > rows || row_end <= row_start)
     {
         throw std::out_of_range("Row index out of range.");

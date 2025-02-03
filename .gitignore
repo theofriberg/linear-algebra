@@ -48,3 +48,4 @@ vcpkg
 
 # Ignore some personal files
 TODO.txt
+.cache/
