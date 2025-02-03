@@ -1,1 +1,1 @@
-# neural-network-from-scratch
+# linear-algebra
